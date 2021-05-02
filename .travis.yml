@@ -1,13 +1,13 @@
-sudo: false
 language: node_js
 node_js:
-  - 12
+  - 14.16.1
 cache: npm
-#branches:
-#  only:
-#    - master # build master branch only
+branches:
+  only:
+    - master
 script:
-  - hexo generate # generate static files
+  - hexo clean
+  - hexo generate
 deploy:
   provider: pages
   skip-cleanup: true
