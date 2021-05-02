@@ -16,21 +16,21 @@ cover: true
 <LabelBlock>Java 开发入门篇  </LabelBlock>
 
 1. [Java开发起航篇](../java/introduction/java-started.html)
-2. [Java开发环境搭建——概念说明](../java/introduction/java-environment.md)
-3. [Java开发环境搭建——Windows篇](../java/introduction/java-environment-windows.md)
-4. [Java开发环境搭建——Mac篇](../java/introduction/java-environment-mac.md)
-5. [Java 集成开发环境—IDEA安装](../java/introduction/java-ide.md)
-6. [Java开发简介](../java/introduction/java-introduction.md)
-7. [Java简单示例](../java/introduction/java-simple-example.md)
-8. [Java中的package与import](../java/introduction/java-package.md)
-9. [Java入门篇小结](../java/introduction/java-primer-conclusion.md)
+2. [Java开发环境搭建——概念说明](../java/introduction/java-environment.html)
+3. [Java开发环境搭建——Windows篇](../java/introduction/java-environment-windows.html)
+4. [Java开发环境搭建——Mac篇](../java/introduction/java-environment-mac.html)
+5. [Java 集成开发环境—IDEA安装](../java/introduction/java-ide.html)
+6. [Java开发简介](../java/introduction/java-introduction.html)
+7. [Java简单示例](../java/introduction/java-simple-example.html)
+8. [Java中的package与import](../java/introduction/java-package.html)
+9. [Java入门篇小结](../java/introduction/java-primer-conclusion.html)
 
 <LabelBlock>Java 开发基础篇  </LabelBlock>
 
-1. [Java开发基础篇](../java/basic/java-basic.md)
-2. [Java程序基本结构](../java/basic/java-simple-structure.md)
-3. [Java变量](../java/basic/java-variable.md)
-4. [Java中的类与对象](../java/basic/java-class.md)
+1. [Java开发基础篇](../java/basic/java-basic.html)
+2. [Java程序基本结构](../java/basic/java-simple-structure.html)
+3. [Java变量](../java/basic/java-variable.html)
+4. [Java中的类与对象](../java/basic/java-class.html)
 5. Java中的注释
 6. 基本数据类型
 7. 运算符
@@ -70,19 +70,19 @@ cover: true
 
 <LabelBlock>Java集合框架  </LabelBlock>
 
-[WeakHashMap源码详解](../java/collections/weakhashmap-code-detail.md)
+[WeakHashMap源码详解](../java/collections/weakhashmap-code-detail.html)
 
 <LabelBlock>Java引用类型  </LabelBlock>
 
-1. [强引用、软引用、弱引用和虚引用深入探讨](../java/reference/four-kinds-of-reference.md)
-2. [强引用](../java/reference/strong-reference.md)
-3. [软引用](../java/reference/soft-reference.md)
-4. [弱引用](../java/reference/weak-reference.md)
-5. [虚引用](../java/reference/phantom-reference.md)
-6. [Reference源码详解](../java/reference/reference-code-detail.md)
-7. [ReferenceQueue源码详解](../java/reference/reference-queue-code-detail.md)
-8. [SoftReference源码详解](../java/reference/soft-reference-code-detail.md)
-9. [WeakReference源码详解](../java/reference/weak-reference-code-detail.md)
-10. [PhantomReference源码详解](../java/reference/phantom-reference-code-detail.md)
-11. [FinalReference 与 Finalizer 详解](../java/reference/final-reference-code-detail.md)
-12. [四种引用类型总结](../java/reference/reference-summary.md)
+1. [强引用、软引用、弱引用和虚引用深入探讨](../java/reference/four-kinds-of-reference.html)
+2. [强引用](../java/reference/strong-reference.html)
+3. [软引用](../java/reference/soft-reference.html)
+4. [弱引用](../java/reference/weak-reference.html)
+5. [虚引用](../java/reference/phantom-reference.html)
+6. [Reference源码详解](../java/reference/reference-code-detail.html)
+7. [ReferenceQueue源码详解](../java/reference/reference-queue-code-detail.html)
+8. [SoftReference源码详解](../java/reference/soft-reference-code-detail.html)
+9. [WeakReference源码详解](../java/reference/weak-reference-code-detail.html)
+10. [PhantomReference源码详解](../java/reference/phantom-reference-code-detail.html)
+11. [FinalReference 与 Finalizer 详解](../java/reference/final-reference-code-detail.html)
+12. [四种引用类型总结](../java/reference/reference-summary.html)
