@@ -3,19 +3,19 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
-keywords:
-author: John Doe
-language: en
-timezone: ''
+title: 弗兰克的猫
+subtitle: 做一只特立独行的猫
+description: 为你，千千万万遍
+keywords: Java,多线程,微服务,DDD
+author: Frank
+language: zh-CN
+timezone:
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://joelet.github.io/
 root: /timefrees-blog/
-permalink: :year/:month/:day/:title/
+permalink: :category/:title.html
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -69,7 +69,43 @@ index_generator:
 # Category & Tag
 default_category: uncategorized
 category_map:
+  编程: programming
+  生活: life
+  阅读: reading
+  感悟: thinking
+  其他: other
+  数据库: database
 tag_map:
+  Java: java
+  Java入门: java-introduction
+  Java基础: java-base
+  Java进阶: java-advanced
+  Java高级: java-senior
+  多线程: multithread
+  微服务: micro-service
+  容器类: container
+  并发容器类: concurrent-container
+  读书笔记: reading-notes
+  摘要: digest
+  环境搭建: enviroment
+  总结: reviews
+  面试: interview
+  垃圾回收: garbage-collection
+  内存泄漏: memory-leak
+  引用类型: reference-type
+  领域驱动: ddd
+  算法: algorithm
+  Spring: spring
+  源码解读: source-code-analysis
+  动态规划: dynamic-programming
+  背包问题: knapsack-problem
+  爬虫: spider
+  Python: python
+  常见问题: problem
+  索引: index
+  测试: test
+  数据库: database
+  消息队列: mq
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
@@ -106,3 +142,34 @@ deploy:
   type: git
   repo: git@github.com:joelet/timefrees-blog.git
   branch: gh-pages
+  
+feed:
+  type: atom
+  path: atom.xml
+  limit: 0
+
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: true
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: false
+    tags: true
+
+githubEmojis:
+  enable: true
+  className: github-emoji
+  unicode: false
+  styles:
+  localEmojis:
