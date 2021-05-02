@@ -105,5 +105,5 @@ theme: landscape
 deploy:
   type: 'git'
   repo: git@github.com:joelet/timefrees-blog.git
-  branch: master
+  branch: gh-pages
 
