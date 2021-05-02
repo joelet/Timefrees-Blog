@@ -4,6 +4,7 @@ tags:
  - Java
 categories: 编程
 date: 2018-12-29 20:20:51
+cover: true
 ---
 
 > 不忘初心，方得始终。
@@ -14,7 +15,7 @@ date: 2018-12-29 20:20:51
 
 <LabelBlock>Java 开发入门篇  </LabelBlock>
 
-1. [Java开发起航篇](../java/introduction/java-started.md)
+1. [Java开发起航篇](../java/introduction/java-started.html)
 2. [Java开发环境搭建——概念说明](../java/introduction/java-environment.md)
 3. [Java开发环境搭建——Windows篇](../java/introduction/java-environment-windows.md)
 4. [Java开发环境搭建——Mac篇](../java/introduction/java-environment-mac.md)
