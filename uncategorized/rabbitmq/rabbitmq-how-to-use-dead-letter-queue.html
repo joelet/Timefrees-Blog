@@ -1,0 +1,1330 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="【RabbitMQ】一文带你搞定RabbitMQ死信队列, Java,多线程,微服务,DDD">
+    <meta name="description" content="为你，千千万万遍">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>【RabbitMQ】一文带你搞定RabbitMQ死信队列 | 弗兰克的猫</title>
+    <link rel="icon" type="image/png" href="/timefrees-blog/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/css/my.css">
+
+    <script src="/timefrees-blog/libs/jquery/jquery.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/timefrees-blog/" class="waves-effect waves-light">
+                    
+                    <img src="/timefrees-blog/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">弗兰克的猫</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/timefrees-blog/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">弗兰克的猫</div>
+        <div class="logo-desc">
+            
+            为你，千千万万遍
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/timefrees-blog/medias/featureimages/12.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">【RabbitMQ】一文带你搞定RabbitMQ死信队列</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/timefrees-blog/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/timefrees-blog/tags/RabbitMQ/">
+                                <span class="chip bg-color">RabbitMQ</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-07-12
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>本文口味：爆炒鱿鱼   预计阅读：15分钟</p>
+<h2 id="一、说明"><a href="#一、说明" class="headerlink" title="一、说明"></a>一、说明</h2><p>RabbitMQ是流行的开源消息队列系统，使用erlang语言开发，由于其社区活跃度高，维护更新较快，性能稳定，深得很多企业的欢心（当然，也包括我现在所在公司【手动滑稽】）。</p>
+<p>为了保证订单业务的消息数据不丢失，需要使用到RabbitMQ的死信队列机制，当消息消费发生异常时，将消息投入死信队列中。但由于对死信队列的概念及配置不熟悉，导致曾一度陷入百度的汪洋大海，无法自拔，很多文章都看起来可行，但是实际上却并不能帮我解决实际问题。最终，在官网文档中找到了我想要的答案，通过官网文档的学习，才发现对于死信队列存在一些误解，导致配置死信队列之路困难重重。</p>
+<p>于是本着记录和分享的精神，将死信队列的概念和配置完整的写下来，以便帮助遇到同样问题的朋友。</p>
+<h2 id="二、本文大纲"><a href="#二、本文大纲" class="headerlink" title="二、本文大纲"></a>二、本文大纲</h2><p>以下是本文大纲：</p>
+<p><img src="https://i.loli.net/2019/07/14/5d2af4176d1d483480.png" alt="AG4T332}_NEUNPUAU(A_)U6.png"></p>
+<p>本文阅读前，需要对RabbitMQ有一个简单的了解，偏向实战配置讲解。</p>
+<h2 id="三、死信队列是什么"><a href="#三、死信队列是什么" class="headerlink" title="三、死信队列是什么"></a>三、死信队列是什么</h2><p>死信，在官网中对应的单词为“Dead Letter”，可以看出翻译确实非常的简单粗暴。那么死信是个什么东西呢？</p>
+<p>“死信”是RabbitMQ中的一种消息机制，当你在消费消息时，如果队列里的消息出现以下情况：</p>
+<ol>
+<li>消息被否定确认，使用 <code>channel.basicNack</code>  或 <code>channel.basicReject</code> ，并且此时<code>requeue</code> 属性被设置为<code>false</code>。</li>
+<li>消息在队列的存活时间超过设置的TTL时间。</li>
+<li>消息队列的消息数量已经超过最大队列长度。</li>
+</ol>
+<p>那么该消息将成为“死信”。</p>
+<p>“死信”消息会被RabbitMQ进行特殊处理，如果配置了死信队列信息，那么该消息将会被丢进死信队列中，如果没有配置，则该消息将会被丢弃。</p>
+<h2 id="四、如何配置死信队列"><a href="#四、如何配置死信队列" class="headerlink" title="四、如何配置死信队列"></a>四、如何配置死信队列</h2><p>这一部分将是本文的关键，如何配置死信队列呢？其实很简单，大概可以分为以下步骤：</p>
+<ol>
+<li>配置业务队列，绑定到业务交换机上</li>
+<li>为业务队列配置死信交换机和路由key</li>
+<li>为死信交换机配置死信队列</li>
+</ol>
+<p>注意，并不是直接声明一个公共的死信队列，然后所以死信消息就自己跑到死信队列里去了。而是为每个需要使用死信的业务队列配置一个死信交换机，这里同一个项目的死信交换机可以共用一个，然后为每个业务队列分配一个单独的路由key。</p>
+<p>有了死信交换机和路由key后，接下来，就像配置业务队列一样，配置死信队列，然后绑定在死信交换机上。也就是说，死信队列并不是什么特殊的队列，只不过是绑定在死信交换机上的队列。死信交换机也不是什么特殊的交换机，只不过是用来接受死信的交换机，所以可以为任何类型【Direct、Fanout、Topic】。一般来说，会为每个业务队列分配一个独有的路由key，并对应的配置一个死信队列进行监听，也就是说，一般会为每个重要的业务队列配置一个死信队列。</p>
+<p>有了前文这些陈述后，接下来就是惊险刺激的实战环节，这里省略了RabbitMQ环境的部署和搭建环节。</p>
+<p>先创建一个Springboot项目。然后在pom文件中添加 <code>spring-boot-starter-amqp</code> 和 <code>spring-boot-starter-web</code> 的依赖，接下来创建一个Config类，这里是关键：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitMQConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String BUSINESS_EXCHANGE_NAME = <span class="string">&quot;dead.letter.demo.simple.business.exchange&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String BUSINESS_QUEUEA_NAME = <span class="string">&quot;dead.letter.demo.simple.business.queuea&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String BUSINESS_QUEUEB_NAME = <span class="string">&quot;dead.letter.demo.simple.business.queueb&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEAD_LETTER_EXCHANGE = <span class="string">&quot;dead.letter.demo.simple.deadletter.exchange&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEAD_LETTER_QUEUEA_ROUTING_KEY = <span class="string">&quot;dead.letter.demo.simple.deadletter.queuea.routingkey&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEAD_LETTER_QUEUEB_ROUTING_KEY = <span class="string">&quot;dead.letter.demo.simple.deadletter.queueb.routingkey&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEAD_LETTER_QUEUEA_NAME = <span class="string">&quot;dead.letter.demo.simple.deadletter.queuea&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEAD_LETTER_QUEUEB_NAME = <span class="string">&quot;dead.letter.demo.simple.deadletter.queueb&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明业务Exchange</span></span><br><span class="line">    <span class="meta">@Bean(&quot;businessExchange&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> FanoutExchange <span class="title">businessExchange</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FanoutExchange(BUSINESS_EXCHANGE_NAME);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明死信Exchange</span></span><br><span class="line">    <span class="meta">@Bean(&quot;deadLetterExchange&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DirectExchange <span class="title">deadLetterExchange</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DirectExchange(DEAD_LETTER_EXCHANGE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明业务队列A</span></span><br><span class="line">    <span class="meta">@Bean(&quot;businessQueueA&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Queue <span class="title">businessQueueA</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; args = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">2</span>);</span><br><span class="line"><span class="comment">//       x-dead-letter-exchange    这里声明当前队列绑定的死信交换机</span></span><br><span class="line">        args.put(<span class="string">&quot;x-dead-letter-exchange&quot;</span>, DEAD_LETTER_EXCHANGE);</span><br><span class="line"><span class="comment">//       x-dead-letter-routing-key  这里声明当前队列的死信路由key</span></span><br><span class="line">        args.put(<span class="string">&quot;x-dead-letter-routing-key&quot;</span>, DEAD_LETTER_QUEUEA_ROUTING_KEY);</span><br><span class="line">        <span class="keyword">return</span> QueueBuilder.durable(BUSINESS_QUEUEA_NAME).withArguments(args).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明业务队列B</span></span><br><span class="line">    <span class="meta">@Bean(&quot;businessQueueB&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Queue <span class="title">businessQueueB</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; args = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">2</span>);</span><br><span class="line"><span class="comment">//       x-dead-letter-exchange    这里声明当前队列绑定的死信交换机</span></span><br><span class="line">        args.put(<span class="string">&quot;x-dead-letter-exchange&quot;</span>, DEAD_LETTER_EXCHANGE);</span><br><span class="line"><span class="comment">//       x-dead-letter-routing-key  这里声明当前队列的死信路由key</span></span><br><span class="line">        args.put(<span class="string">&quot;x-dead-letter-routing-key&quot;</span>, DEAD_LETTER_QUEUEB_ROUTING_KEY);</span><br><span class="line">        <span class="keyword">return</span> QueueBuilder.durable(BUSINESS_QUEUEB_NAME).withArguments(args).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明死信队列A</span></span><br><span class="line">    <span class="meta">@Bean(&quot;deadLetterQueueA&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Queue <span class="title">deadLetterQueueA</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Queue(DEAD_LETTER_QUEUEA_NAME);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明死信队列B</span></span><br><span class="line">    <span class="meta">@Bean(&quot;deadLetterQueueB&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Queue <span class="title">deadLetterQueueB</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Queue(DEAD_LETTER_QUEUEB_NAME);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明业务队列A绑定关系</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Binding <span class="title">businessBindingA</span><span class="params">(<span class="meta">@Qualifier(&quot;businessQueueA&quot;)</span> Queue queue,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    <span class="meta">@Qualifier(&quot;businessExchange&quot;)</span> FanoutExchange exchange)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明业务队列B绑定关系</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Binding <span class="title">businessBindingB</span><span class="params">(<span class="meta">@Qualifier(&quot;businessQueueB&quot;)</span> Queue queue,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    <span class="meta">@Qualifier(&quot;businessExchange&quot;)</span> FanoutExchange exchange)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明死信队列A绑定关系</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Binding <span class="title">deadLetterBindingA</span><span class="params">(<span class="meta">@Qualifier(&quot;deadLetterQueueA&quot;)</span> Queue queue,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    <span class="meta">@Qualifier(&quot;deadLetterExchange&quot;)</span> DirectExchange exchange)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(DEAD_LETTER_QUEUEA_ROUTING_KEY);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明死信队列B绑定关系</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Binding <span class="title">deadLetterBindingB</span><span class="params">(<span class="meta">@Qualifier(&quot;deadLetterQueueB&quot;)</span> Queue queue,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      <span class="meta">@Qualifier(&quot;deadLetterExchange&quot;)</span> DirectExchange exchange)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> BindingBuilder.bind(queue).to(exchange).with(DEAD_LETTER_QUEUEB_ROUTING_KEY);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里声明了两个Exchange，一个是业务Exchange，另一个是死信Exchange，业务Exchange下绑定了两个业务队列，业务队列都配置了同一个死信Exchange，并分别配置了路由key，在死信Exchange下绑定了两个死信队列，设置的路由key分别为业务队列里配置的路由key。</p>
+<p>下面是配置文件application.yml：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">rabbitmq:</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">guest</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">guest</span></span><br><span class="line">    <span class="attr">listener:</span></span><br><span class="line">      <span class="attr">type:</span> <span class="string">simple</span></span><br><span class="line">      <span class="attr">simple:</span></span><br><span class="line">          <span class="attr">default-requeue-rejected:</span> <span class="literal">false</span></span><br><span class="line">          <span class="attr">acknowledge-mode:</span> <span class="string">manual</span></span><br></pre></td></tr></table></figure>
+
+<p>这里记得将<code>default-requeue-rejected</code>属性设置为false。</p>
+<p>接下来，是业务队列的消费代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BusinessMessageReceiver</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RabbitListener(queues = BUSINESS_QUEUEA_NAME)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveA</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String msg = <span class="keyword">new</span> String(message.getBody());</span><br><span class="line">        log.info(<span class="string">&quot;收到业务消息A：&#123;&#125;&quot;</span>, msg);</span><br><span class="line">        <span class="keyword">boolean</span> ack = <span class="keyword">true</span>;</span><br><span class="line">        Exception exception = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (msg.contains(<span class="string">&quot;deadletter&quot;</span>))&#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;dead letter exception&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            ack = <span class="keyword">false</span>;</span><br><span class="line">            exception = e;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!ack)&#123;</span><br><span class="line">            log.error(<span class="string">&quot;消息消费发生异常，error msg:&#123;&#125;&quot;</span>, exception.getMessage(), exception);</span><br><span class="line">            channel.basicNack(message.getMessageProperties().getDeliveryTag(), <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            channel.basicAck(message.getMessageProperties().getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RabbitListener(queues = BUSINESS_QUEUEB_NAME)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveB</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;收到业务消息B：&quot;</span> + <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">        channel.basicAck(message.getMessageProperties().getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后配置死信队列的消费者：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLetterMessageReceiver</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@RabbitListener(queues = DEAD_LETTER_QUEUEA_NAME)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveA</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;收到死信消息A：&quot;</span> + <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">        channel.basicAck(message.getMessageProperties().getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RabbitListener(queues = DEAD_LETTER_QUEUEB_NAME)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">receiveB</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;收到死信消息B：&quot;</span> + <span class="keyword">new</span> String(message.getBody()));</span><br><span class="line">        channel.basicAck(message.getMessageProperties().getDeliveryTag(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，为了方便测试，写一个简单的消息生产者，并通过controller层来生产消息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BusinessMessageSender</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RabbitTemplate rabbitTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMsg</span><span class="params">(String msg)</span></span>&#123;</span><br><span class="line">        rabbitTemplate.convertSendAndReceive(BUSINESS_EXCHANGE_NAME, <span class="string">&quot;&quot;</span>, msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;rabbitmq&quot;)</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitMQMsgController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> BusinessMessageSender sender;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;sendmsg&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMsg</span><span class="params">(String msg)</span></span>&#123;</span><br><span class="line">        sender.sendMsg(msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一切准备就绪，启动！</p>
+<p>可以从RabbitMQ的管理后台中看到一共有四个队列，除默认的Exchange外还有声明的两个Exchange。</p>
+<p>![8(%(3A_Y`_N8XX8W5XHZMWY.png](<a target="_blank" rel="noopener" href="https://i.loli.net/2019/07/14/5d2ae72753a8e90481.png">https://i.loli.net/2019/07/14/5d2ae72753a8e90481.png</a>)</p>
+<p><img src="https://i.loli.net/2019/07/14/5d2ae792598f781012.png" alt="123.png"></p>
+<p>接下来，访问一下url，来测试一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;rabbitmq&#x2F;sendmsg?msg&#x3D;msg</span><br></pre></td></tr></table></figure>
+
+<p>日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">收到业务消息A：msg</span><br><span class="line">收到业务消息B：msg</span><br></pre></td></tr></table></figure>
+
+<p>表示两个Consumer都正常收到了消息。这代表正常消费的消息，ack后正常返回。然后我们再来测试nck的消息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;rabbitmq&#x2F;sendmsg?msg&#x3D;deadletter</span><br></pre></td></tr></table></figure>
+
+<p>这将会触发业务队列A的NCK，按照预期，消息被NCK后，会抛到死信队列中，因此死信队列将会出现这个消息，日志如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">收到业务消息A：deadletter</span><br><span class="line">消息消费发生异常，error msg:dead letter exception</span><br><span class="line">java.lang.RuntimeException: dead letter exception</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">收到死信消息A：deadletter</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，死信队列的Consumer接受到了这个消息，所以流程到此为止就打通了。</p>
+<h2 id="五、死信消息的变化"><a href="#五、死信消息的变化" class="headerlink" title="五、死信消息的变化"></a>五、死信消息的变化</h2><p>那么“死信”被丢到死信队列中后，会发生什么变化呢？</p>
+<p>如果队列配置了参数 <code>x-dead-letter-routing-key</code> 的话，“死信”的路由key将会被替换成该参数对应的值。如果没有设置，则保留该消息原有的路由key。</p>
+<p>举个栗子：</p>
+<p>如果原有消息的路由key是<code>testA</code>，被发送到业务Exchage中，然后被投递到业务队列QueueA中，如果该队列没有配置参数<code>x-dead-letter-routing-key</code>，则该消息成为死信后，将保留原有的路由key<code>testA</code>，如果配置了该参数，并且值设置为<code>testB</code>，那么该消息成为死信后，路由key将会被替换为<code>testB</code>，然后被抛到死信交换机中。</p>
+<p>另外，由于被抛到了死信交换机，所以消息的Exchange Name也会被替换为死信交换机的名称。</p>
+<p>消息的Header中，也会添加很多奇奇怪怪的字段，修改一下上面的代码，在死信队列的消费者中添加一行日志输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log.info(<span class="string">&quot;死信消息properties：&#123;&#125;&quot;</span>, message.getMessageProperties());</span><br></pre></td></tr></table></figure>
+
+<p>然后重新运行一次，即可得到死信消息Header中被添加的信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">死信消息properties：MessageProperties [headers&#x3D;&#123;x-first-death-exchange&#x3D;dead.letter.demo.simple.business.exchange, x-death&#x3D;[&#123;reason&#x3D;rejected, count&#x3D;1, exchange&#x3D;dead.letter.demo.simple.business.exchange, time&#x3D;Sun Jul 14 16:48:16 CST 2019, routing-keys&#x3D;[], queue&#x3D;dead.letter.demo.simple.business.queuea&#125;], x-first-death-reason&#x3D;rejected, x-first-death-queue&#x3D;dead.letter.demo.simple.business.queuea&#125;, correlationId&#x3D;1, replyTo&#x3D;amq.rabbitmq.reply-to.g2dkABZyYWJiaXRAREVTS1RPUC1DUlZGUzBOAAAPQAAAAAAB.bLbsdR1DnuRSwiKKmtdOGw&#x3D;&#x3D;, contentType&#x3D;text&#x2F;plain, contentEncoding&#x3D;UTF-8, contentLength&#x3D;0, receivedDeliveryMode&#x3D;PERSISTENT, priority&#x3D;0, redelivered&#x3D;false, receivedExchange&#x3D;dead.letter.demo.simple.deadletter.exchange, receivedRoutingKey&#x3D;dead.letter.demo.simple.deadletter.queuea.routingkey, deliveryTag&#x3D;1, consumerTag&#x3D;amq.ctag-NSp18SUPoCNvQcoYoS2lPg, consumerQueue&#x3D;dead.letter.demo.simple.deadletter.queuea]</span><br></pre></td></tr></table></figure>
+
+<p>Header中看起来有很多信息，实际上并不多，只是值比较长而已。下面就简单说明一下Header中的值：</p>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>x-first-death-exchange</td>
+<td>第一次被抛入的死信交换机的名称</td>
+</tr>
+<tr>
+<td>x-first-death-reason</td>
+<td>第一次成为死信的原因，<code>rejected</code>：消息在重新进入队列时被队列拒绝，由于<code>default-requeue-rejected</code> 参数被设置为<code>false</code>。<code>expired</code>  ：消息过期。<code>maxlen</code> ： 队列内消息数量超过队列最大容量</td>
+</tr>
+<tr>
+<td>x-first-death-queue</td>
+<td>第一次成为死信前所在队列名称</td>
+</tr>
+<tr>
+<td>x-death</td>
+<td>历次被投入死信交换机的信息列表，同一个消息每次进入一个死信交换机，这个数组的信息就会被更新</td>
+</tr>
+</tbody></table>
+<h2 id="六、死信队列应用场景"><a href="#六、死信队列应用场景" class="headerlink" title="六、死信队列应用场景"></a>六、死信队列应用场景</h2><p>通过上面的信息，我们已经知道如何使用死信队列了，那么死信队列一般在什么场景下使用呢？</p>
+<p>一般用在较为重要的业务队列中，确保未被正确消费的消息不被丢弃，一般发生消费异常可能原因主要有由于消息信息本身存在错误导致处理异常，处理过程中参数校验异常，或者因网络波动导致的查询异常等等，当发生异常时，当然不能每次通过日志来获取原消息，然后让运维帮忙重新投递消息（没错，以前就是这么干的= =）。通过配置死信队列，可以让未正确处理的消息暂存到另一个队列中，待后续排查清楚问题后，编写相应的处理代码来处理死信消息，这样比手工恢复数据要好太多了。</p>
+<h2 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h2><p>死信队列其实并没有什么神秘的地方，不过是绑定在死信交换机上的普通队列，而死信交换机也只是一个普通的交换机，不过是用来专门处理死信的交换机。</p>
+<p>总结一下死信消息的生命周期：</p>
+<ol>
+<li>业务消息被投入业务队列</li>
+<li>消费者消费业务队列的消息，由于处理过程中发生异常，于是进行了nck或者reject操作</li>
+<li>被nck或reject的消息由RabbitMQ投递到死信交换机中</li>
+<li>死信交换机将消息投入相应的死信队列</li>
+<li>死信队列的消费者消费死信消息</li>
+</ol>
+<p>死信消息是RabbitMQ为我们做的一层保证，其实我们也可以不使用死信队列，而是在消息消费异常时，将消息主动投递到另一个交换机中，当你明白了这些之后，这些Exchange和Queue想怎样配合就能怎么配合。比如从死信队列拉取消息，然后发送邮件、短信、钉钉通知来通知开发人员关注。或者将消息重新投递到一个队列然后设置过期时间，来进行延时消费。</p>
+<p>如果本文对你有帮助，记得点个赞，也希望能分享给更多的朋友。也欢迎关注我的公众号进行留言交流。</p>
+<p><img src="https://i.loli.net/2019/07/14/5d2af6692a8f432182.png" alt="TIM图片20190714173105.png"></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/timefrees-blog/about" rel="external nofollow noreferrer">Frank</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://joelet.github.io/timefrees-blog/uncategorized/rabbitmq/rabbitmq-how-to-use-dead-letter-queue.html">https://joelet.github.io/timefrees-blog/uncategorized/rabbitmq/rabbitmq-how-to-use-dead-letter-queue.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/timefrees-blog/about" target="_blank">Frank</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/timefrees-blog/tags/RabbitMQ/">
+                                    <span class="chip bg-color">RabbitMQ</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/timefrees-blog/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/timefrees-blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/timefrees-blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/timefrees-blog/uncategorized/rabbitmq/rabbitmq-how-to-use-delay-queue.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/timefrees-blog/medias/featureimages/17.jpg" class="responsive-img" alt="【RabbitMQ】一文带你搞定RabbitMQ延迟队列">
+                        
+                        <span class="card-title">【RabbitMQ】一文带你搞定RabbitMQ延迟队列</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-07-27
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Frank
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/timefrees-blog/tags/RabbitMQ/">
+                        <span class="chip bg-color">RabbitMQ</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/DelayQueue/">
+                        <span class="chip bg-color">DelayQueue</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/timefrees-blog/uncategorized/mysql/mysql-index-introduction.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/timefrees-blog/medias/featureimages/5.jpg" class="responsive-img" alt="【Mysql】索引简介">
+                        
+                        <span class="card-title">【Mysql】索引简介</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-07-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Frank
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/timefrees-blog/tags/mysql/">
+                        <span class="chip bg-color">mysql</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/database/">
+                        <span class="chip bg-color">数据库</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/timefrees-blog/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/timefrees-blog/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/timefrees-blog/libs/aplayer/APlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+    
+    <div class="container row center-align" style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2021</span>
+            
+            <span id="year">2019</span>
+            <a href="/timefrees-blog/about" target="_blank">Frank</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/blinkfox" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1181062873@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1181062873" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1181062873" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/timefrees-blog/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/timefrees-blog/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/timefrees-blog/libs/materialize/materialize.min.js"></script>
+    <script src="/timefrees-blog/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/timefrees-blog/libs/aos/aos.js"></script>
+    <script src="/timefrees-blog/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/timefrees-blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/timefrees-blog/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/timefrees-blog/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/timefrees-blog/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/timefrees-blog/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

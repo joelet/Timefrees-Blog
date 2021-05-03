@@ -1,0 +1,1361 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="【动态规划】01背包问题, Java,多线程,微服务,DDD">
+    <meta name="description" content="为你，千千万万遍">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>【动态规划】01背包问题 | 弗兰克的猫</title>
+    <link rel="icon" type="image/png" href="/timefrees-blog/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/css/my.css">
+
+    <script src="/timefrees-blog/libs/jquery/jquery.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/timefrees-blog/" class="waves-effect waves-light">
+                    
+                    <img src="/timefrees-blog/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">弗兰克的猫</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/timefrees-blog/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">弗兰克的猫</div>
+        <div class="logo-desc">
+            
+            为你，千千万万遍
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/timefrees-blog/medias/featureimages/6.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">【动态规划】01背包问题</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/timefrees-blog/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/timefrees-blog/tags/java/">
+                                <span class="chip bg-color">Java</span>
+                            </a>
+                        
+                            <a href="/timefrees-blog/tags/algorithm/">
+                                <span class="chip bg-color">算法</span>
+                            </a>
+                        
+                            <a href="/timefrees-blog/tags/dynamic-programming/">
+                                <span class="chip bg-color">动态规划</span>
+                            </a>
+                        
+                            <a href="/timefrees-blog/tags/knapsack-problem/">
+                                <span class="chip bg-color">背包问题</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/timefrees-blog/categories/programming/" class="post-category">
+                                编程
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-03-10
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>前面用<code>动态规划</code>解决了正则表达式的问题，感觉还是不过瘾，总觉得对于<code>动态规划</code>的理解还没有到位，所以趁热打铁，继续研究几个<code>动态规划</code>的经典问题，希望能够借此加深对<code>动态规划</code>的理解。在此之前，还需要说两个跟动态规划有关的理论知识。</p>
+<h2 id="最优化原理"><a href="#最优化原理" class="headerlink" title="最优化原理"></a>最优化原理</h2><p><code>最优化原理</code>指的最优策略具有这样的性质：不论过去状态和决策如何，对前面的决策所形成的状态而言，余下的诸决策必须构成最优策略。简单来说就是一个最优策略的子策略也是必须是最优的，而所有子问题的局部最优解将导致整个问题的全局最优。如果一个问题能满足<code>最优化原理</code>，就称其具有<code>最优子结构性质</code>。</p>
+<p>这是判断问题能否使用动态规划解决的先决条件，如果一个问题不能满足最优化原理，那么这个问题就不适合用动态规划来求解。</p>
+<p>这样说可能比较模糊，来举个栗子吧：</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a1e400a1c1.jpeg"></p>
+<p>如上图，<em>求从A点到E点的最短距离</em>，那么子问题就是<em>求从A点到E点之间的中间点到E点的最短距离，比如这里的B点</em>。</p>
+<p>那么这个问题里，怎么证明最优化原理呢？</p>
+<p>我们假设从A点到E点的最短距离为d，其最优策略的子策略假设经过B点，记该策略中B点到E点的距离为<code>d1</code>，A点到B点的距离为<code>d2</code>。我们可以使用反证法，假设存在B点到E点的最短距离<code>d3</code>，并且<code>d3 &lt; d1</code>，那么 <code>d3 + d2 &lt; d1 + d2 = d</code>，这与d是最短距离相矛盾，所以，<code>d1</code>是B点到E点的最短距离。</p>
+<p>为了增加理解，这里再举一个反例：</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a3c4e20747.jpeg"></p>
+<p>图中有四个点，A、B、C、D，相邻两点有两条连线，代表两条通道，d1,d2,d3,d4,d5,d6代表的是道路的长度，求A到D的所有通道中，总长度除以4得到的余数最小的路径为<em>最优路径</em>，求一条<em>最优路径</em>。</p>
+<p>这里如果还是按照上面的思路去求解，就会误入歧途了。按照之前的思路，A的最优取值应该可以由B的最优取值来确定，而B的最优取值为（3+5）mod 4 = 0。所以应该选<code>d2</code>和<code>d6</code>这两条道路，而实际上，全局最优解是<code>d4+d5+d6</code>或者<code>d1+d5+d3</code>。所以这里子问题的最优解并不是原问题的最优解，即不满足最优化原理。所以就不适合使用动态规划来求解了。</p>
+<h2 id="无后效性"><a href="#无后效性" class="headerlink" title="无后效性"></a>无后效性</h2><p><code>无后效性</code>指的是某状态下决策的收益，只与状态和决策相关，与到达该状态的方式无关。某个阶段的状态一旦确定，则此后过程的演变不再受此前各种状态及决策的影响。换句话说，未来与过去无关，当前状态是此前历史状态的完整总结，此前历史决策只能通过影响当前的状态来影响未来的演变。再换句话说，过去做的选择不会影响现在能做的最优选择，现在能做的最优选择只与当前的状态有关，与经过如何复杂的决策到达该状态的方式无关。</p>
+<p>这也是用来验证问题是否可以使用动态规划来解答的重要方法。</p>
+<p>我们再回头看看上面的最短路径问题，如果在原来的基础上加上一个限制条件：<em>同一个格子只能通过一次</em>。那么， 这个题就不符合无后效性了，因为前一个子问题的解会对后面子问题的选择策略有影响，比如说，如果从A到B选择了一条如下图中绿色表示的路线，那么从B点出发到达E点的路线就只有一条了。也就是说从A点到B点的路径选择会影响B点到E点的路径选择。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a47085f922.jpeg"></p>
+<p>理论部分就此打住，接下来我们实战一下。</p>
+<h2 id="01背包问题"><a href="#01背包问题" class="headerlink" title="01背包问题"></a>01背包问题</h2><p>假设你是一名经验丰富的探险家，背着背包来到野外进行日常探险。天气晴朗而不燥热，山间的风夹杂着花香，正当你欣赏这世外桃源般的美景时，突然，你发现了一个洞穴，这个洞穴外表看起来其貌不扬，但凭借着惊为天人的直觉，这个洞穴不简单。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a47d0de9a6.png"></p>
+<p>于是，你开始往洞穴内探索，希望能发现一些有意思的东西。终于，皇天不负有心人，你在洞穴的尽头，发现了一堆不世出的珠宝，凭借你惊人的阅历，一眼便看出了它们各自的价值，心想着下下下下下下下下半辈子都有着落了。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a564a63265.png"></p>
+<p>然而，天有不测风云，正准备将它们收入囊中，却不小心触碰到一个防御机关，洞穴马上就要崩塌了。在此危机时刻，你只有一个背包，你必须尽快做出抉择，从中选择最值钱的珠宝塞到你的背包，让背包中珠宝的总价值最大。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a56572a8c0.png"></p>
+<p>好了好了，啰里啰嗦了大半天，我还是来精简一下问题吧。简而言之，你只有一个容量有限的背包，总容量为c，有n个可待选择的物品，每个物品只有一件，它们都有各自的重量和价值，你需要从中选择合适的组合来使得你背包中的物品总价值最大。</p>
+<h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>那还不简单，不管是什么，先往背包里塞，塞满赶紧走，狗命要紧，狗命要紧。。。</p>
+<p><img src="https://i.loli.net/2019/03/10/5c8515f07c869.png" alt="20190310214935.png"></p>
+<p>好了好了，开个玩笑，言归正传。</p>
+<p>简单起见，我们来将上面的问题具体化，举一个更具体的栗子：</p>
+<p>假设有5个物品，它们的价值(v)和重量(w)如下图：</p>
+
+
+<p>背包总容量为10，现在要从中选择物品装入背包中，要求物品的重量不能超过背包的容量，并且最后放在背包中物品的总价值最大。</p>
+<p>emmm，等等，为什么叫做<code>0/1背包</code>呢？为什么不叫<code>1/2背包</code>，<code>2/3背包</code>？？？</p>
+<p>仔细想想，这里每个物品只有一个，对于每个物品而言，只有两种选择，盘它或者不盘，盘它记为1，不盘记为0，我们不能将物品进行分割，比如只拿半个是不允许的。这就是这个问题被称为<code>0/1背包</code>问题的原因。</p>
+<p>所以究竟选还是不选，这是个问题。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a56a150bc1.png"></p>
+<p>让我们先来体验一下将珠宝装入背包的感觉，为了方便起见，用<code>xi</code>代表第i个珠宝的选择（<code>xi = 1</code> 代表选择该珠宝，0则代表不选），<code>vi</code>代表第i个珠宝的价值，<code>wi</code>代表第i个珠宝的重量。于是我们就有了这样的限制条件：</p>
+<p><img src="https://i.loli.net/2019/03/10/5c851ebfd4687.jpeg"></p>
+<p>我们的初始状态是背包容量为10，背包内物品总价值为0，接下来，我们就要开始做选择了。对于1号珠宝，当前容量为10，容纳它的重量2绰绰有余，因此有两种选择，选它或者不选。我们选择一个珠宝的时候，背包的容量会减少，但是里面的物品总价值会增加。就像下面这样：</p>
+
+
+<p>这样就分出了两种情况，我们继续进行选择，如果我们选择了珠宝1，那么对于珠宝2，当前剩余容量为8，大于珠宝2的容量3，因此也有两种选择，选或者不选。</p>
+<p><img src="https://i.loli.net/2019/03/10/5c8524cc69459.jpeg"></p>
+<p>现在，我们得到了四个可能结果，我们每做出一个选择，就会将上面的每一种可能分裂成两种可能，后续的选择也是如此，最终，我们会得到如下的一张决策图：</p>
+<p><img src="https://i.loli.net/2019/03/10/5c85286b617f4.jpeg"></p>
+<p>这里被涂上色的方框代表我们的最终待选结果，本来应该有16个待选结果，但有三个结果由于容量不足以容纳下最后一个珠宝，所以就没有继续进行裂变。</p>
+<p>然后，我们从这些结果中，找出价值最大的那个，也就是<code>13</code>，这就是我们的最优选择，根据这个选择，依次找到它的所有路径，便可以知道该选哪几个珠宝，最终结果是：珠宝4，珠宝2，珠宝1。</p>
+<h2 id="分治法"><a href="#分治法" class="headerlink" title="分治法"></a>分治法</h2><p>接下来，我们就来分析一下，如何将它扩展到一般情况。为了实现这个目的，我们需要将问题进行抽象并建模，然后将其划分为更小的子问题，找出递推关系式，这是分治思想中很重要的一步。</p>
+<ol>
+<li>抽象问题，背包问题抽象为寻找组合（x1,x2,x3…xn，其中xi取0或1，表示第i个物品取或者不取），vi代表第i个物品的价值，wi代表第i个物品的重量，总物品数为n，背包容量为c。</li>
+<li>建模，问题即求max(x1v1 + x2v2 + x3v3 + … + xnvn)。</li>
+<li>约束条件，x1w1 + x2w2 + x3w3 + … + xnwn &lt; c</li>
+<li>定义函数KS(i,j)：代表当前背包剩余容量为j时，前i个物品最佳组合所对应的价值；</li>
+</ol>
+<p>那这里的递推关系式是怎样的呢？对于第i个物品，有两种可能：</p>
+<ol>
+<li>背包剩余容量不足以容纳该物品，此时背包的价值与前i-1个物品的价值是一样的，KS(i,j) = KS(i-1,j)</li>
+<li>背包剩余容量可以装下该商品，此时需要进行判断，因为装了该商品不一定能使最终组合达到最大价值，如果不装该商品，则价值为：KS(i-1,j)，如果装了该商品，则价值为KS(i-1,j-wi) + vi，从两者中选择较大的那个，所以就得出了递推关系式：</li>
+</ol>
+<p><img src="https://i.loli.net/2019/03/12/5c87b64eb1a66.jpeg"></p>
+<p>对于这个问题的子问题，这里有必要详细说明一下。原问题是，将n件物品放入容量为c的背包，子问题则是，将前i件物品放入容量为j的背包，所得到的最优价值为KS(i,j)，如果只考虑第i件物品放还是不放，那么就可以转化为一个只涉及到前i-1个物品的问题。如果不放第i个物品，那么问题就转化为“前i-1件物品放入容量为j的背包中的最优价值组合”，对应的值为KS(i-1,j)。如果放第i个物品，那么问题就转化成了“前i-1件物品放入容量为j-wi的背包中的最优价值组合”，此时对应的值为KS(i-1,j-wi)+vi。</p>
+<p>所以，就可以很容易的写出递归解法了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] vs = &#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">7</span>&#125;;</span><br><span class="line">    <span class="keyword">int</span>[] ws = &#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">5</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testKnapsack1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = ks(<span class="number">4</span>,<span class="number">10</span>);</span><br><span class="line">        System.out.println(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">ks</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> c)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (i == <span class="number">0</span> || c == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">// 初始条件</span></span><br><span class="line">            result = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(ws[i] &gt; c)&#123;</span><br><span class="line">            <span class="comment">// 装不下该珠宝</span></span><br><span class="line">            result = ks(i-<span class="number">1</span>, c);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 可以装下</span></span><br><span class="line">            <span class="keyword">int</span> tmp1 = ks(i-<span class="number">1</span>, c);</span><br><span class="line">            <span class="keyword">int</span> tmp2 = ks(i-<span class="number">1</span>, c-ws[i]) + vs[i];</span><br><span class="line">            result = Math.max(tmp1, tmp2);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里为了方便处理，将数组ws和vs都增加了一个补位数0，防止数组越界，输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">13</span><br></pre></td></tr></table></figure>
+
+<p>这样，我们就轻松加愉快的解决了这个问题。</p>
+<h2 id="动态规划解法"><a href="#动态规划解法" class="headerlink" title="动态规划解法"></a>动态规划解法</h2><h3 id="验证可行性"><a href="#验证可行性" class="headerlink" title="验证可行性"></a>验证可行性</h3><p>既然开头已经说了两个验证问题是否可以使用动态规划求解的方法，那么为何不试一试呢？</p>
+<p>先来看看<code>最优化原理</code>。同样，我们使用反证法：</p>
+<p>假设(x1，x2，…，xn)是01背包问题的最优解，则有(x2，x3，…，xn)是其子问题的最优解，假设(y2，y3，…，yn)是上述问题的子问题最优解，则有(v2y2+v3y3+…+vnyn)+v1x1 &gt; (v2x2+v3x3+…+vnxn)+v1x1。说明(X1，Y2，Y3，…，Yn)才是该01背包问题的最优解，这与最开始的假设(X1，X2，…，Xn)是01背包问题的最优解相矛盾，故01背包问题满足<code>最优性原理</code>。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a5766a30bc.png"></p>
+<p>至于<code>无后效性</code>，其实比较好理解。对于任意一个阶段，只要背包剩余容量和可选物品是一样的，那么我们能做出的现阶段的最优选择必定是一样的，是不受之前选择了什么物品所影响的。即满足<code>无后效性</code>。</p>
+<h3 id="自上而下记忆法"><a href="#自上而下记忆法" class="headerlink" title="自上而下记忆法"></a>自上而下记忆法</h3><p>就像上一篇里的解法一样，自上而下的解法与分治法的区别就是增加了一个数组用来存储计算的中间结果来减少重复计算。这里，我们只需要多定义一个二维数组。</p>
+<p><img src="https://i.loli.net/2019/03/12/5c87c27322752.jpeg"></p>
+<p>表格中，每一个格子都代表着一个子问题，我们最终的问题是求最右下角的格子的值，也就是<code>i=4,j=10</code>时的值。这里，我们的初始条件便是i=0或者j=0时对应的ks值为0，这很好理解，如果可选物品为0，或者剩余容量为0，那么最大价值自然也是0。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] vs = &#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">7</span>&#125;;</span><br><span class="line">    <span class="keyword">int</span>[] ws = &#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">5</span>&#125;;</span><br><span class="line">    Integer[][] results = <span class="keyword">new</span> Integer[<span class="number">5</span>][<span class="number">11</span>];</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testKnapsack2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = ks2(<span class="number">4</span>,<span class="number">10</span>);</span><br><span class="line">        System.out.println(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">ks2</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> c)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 如果该结果已经被计算，那么直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (results[i][c] != <span class="keyword">null</span>) <span class="keyword">return</span> results[i][c];</span><br><span class="line">        <span class="keyword">if</span> (i == <span class="number">0</span> || c == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">// 初始条件</span></span><br><span class="line">            result = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(ws[i] &gt; c)&#123;</span><br><span class="line">            <span class="comment">// 装不下该珠宝</span></span><br><span class="line">            result = ks(i-<span class="number">1</span>, c);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 可以装下</span></span><br><span class="line">            <span class="keyword">int</span> tmp1 = ks(i-<span class="number">1</span>, c);</span><br><span class="line">            <span class="keyword">int</span> tmp2 = ks(i-<span class="number">1</span>, c-ws[i]) + vs[i];</span><br><span class="line">            result = Math.max(tmp1, tmp2);</span><br><span class="line">            results[i][c] = result;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，其实只比分治多了三行代码。</p>
+<h3 id="自下而上填表法"><a href="#自下而上填表法" class="headerlink" title="自下而上填表法"></a>自下而上填表法</h3><p>接下来，我们用自下而上的方法来解一下这道题，思路很简单，就是不断的填表，回想一下上一篇中的斐波拉契数列的自下而上解法，这里将使用同样的方式来解决。还是使用上面的表格，我们开始一行行填表。</p>
+<p><img src="https://i.loli.net/2019/03/12/5c87c45b5d9bf.jpeg"></p>
+<p>当i=1时，即只有珠宝1可供选择，那么如果容量足够的话，最大价值自然就是珠宝1的价值了。</p>
+<p><img src="https://i.loli.net/2019/03/12/5c87c4c11104c.jpeg"></p>
+<p>当i=2时，有两个物品可供选择，此时应用上面的递推关系式进行判断即可。这里以i=2,j=3为例进行分析：</p>
+<p><img src="https://i.loli.net/2019/03/12/5c87c673e6c36.jpeg"></p>
+<p>剩下的格子使用相同的方法进行填充即可：</p>
+<p><img src="https://i.loli.net/2019/03/12/5c87c75ba58ce.jpeg"></p>
+<p>这样，我们就得到了最后的结果：13。根据结果，我们可以反向找出各个物品的选择，寻找的方法很简单，就是从<code>i=4,j=10</code>开始寻找，如果<code>ks(i-1,j)=ks(i,j)</code>，说明第i个物品没有被选中，从<code>ks(i-1,j)</code>继续寻找。否则，表示第i个物品已被选中，则从<code>ks(i-1,j-wi)</code>开始寻找。</p>
+
+
+<p>转化成代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] vs = &#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">7</span>&#125;;</span><br><span class="line">    <span class="keyword">int</span>[] ws = &#123;<span class="number">0</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">5</span>&#125;;</span><br><span class="line">    Integer[][] results = <span class="keyword">new</span> Integer[<span class="number">5</span>][<span class="number">11</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testKnapsack3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = ks3(<span class="number">4</span>,<span class="number">10</span>);</span><br><span class="line">        System.out.println(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">ks3</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 初始化</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> m = <span class="number">0</span>; m &lt;= i; m++)&#123;</span><br><span class="line">            results[m][<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> m = <span class="number">0</span>; m &lt;= j; m++)&#123;</span><br><span class="line">            results[<span class="number">0</span>][m] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 开始填表</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> m = <span class="number">1</span>; m &lt;= i; m++)&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">1</span>; n &lt;= j; n++)&#123;</span><br><span class="line">                <span class="keyword">if</span> (n &lt; ws[m])&#123;</span><br><span class="line">                    <span class="comment">// 装不进去</span></span><br><span class="line">                    results[m][n] = results[m-<span class="number">1</span>][n];</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 容量足够</span></span><br><span class="line">                    <span class="keyword">if</span> (results[m-<span class="number">1</span>][n] &gt; results[m-<span class="number">1</span>][n-ws[m]] + vs[m])&#123;</span><br><span class="line">                        <span class="comment">// 不装该珠宝，最优价值更大</span></span><br><span class="line">                        results[m][n] = results[m-<span class="number">1</span>][n];</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        results[m][n] = results[m-<span class="number">1</span>][n-ws[m]] + vs[m];</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> results[i][j];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>嗯，完美解决。时间复杂度即填表耗时<code>O(n * c)</code>，这里用了一个二维数组来存储子问题的解，所以空间复杂度为<code>O(n * c)</code>;</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>回过头再看看上面的分析，会发现动态规划里最关键的问题其实是寻找原问题的子问题，并写出递推表达式，只要完成了这一步，代码部分都是水到渠成的事情了。</p>
+<p>那么问题来了，怎样把问题拆分成子问题呢？</p>
+<p>emmm，这个问题有点超纲了，说实话，我也没有掌握到诀窍，还是得具体情况具体分析，但是很多经典的问题都有其经典的套路，其它问题都可以归结到这些问题上面来，可以看做是它们的变种和延伸，把这些经典的问题吃透的话，自然能举一反三。比如采药问题，本质上就是01背包问题，而硬币问题，本质上就是我们之后要介绍的完全背包问题。</p>
+<p>个人认为，算法不在于刷多少个，而在于归纳总结，就跟做数学题一样，总有一些范式和套路，不管形式如何变化，其本质是一样的，万变不离其宗，说的就是这么回事。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a580b1789e.png"></p>
+<p>本篇到此就告一段落了，如果觉得有收获，不要吝啬你的赞哦，也欢迎关注我的公众号留言交流。</p>
+<p><img src="https://i.loli.net/2019/03/14/5c8a58ba229ca.png"></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/timefrees-blog/about" rel="external nofollow noreferrer">Frank</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://joelet.github.io/timefrees-blog/programming/leetcode/dp-01-knapsack-problem.html">https://joelet.github.io/timefrees-blog/programming/leetcode/dp-01-knapsack-problem.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/timefrees-blog/about" target="_blank">Frank</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/timefrees-blog/tags/java/">
+                                    <span class="chip bg-color">Java</span>
+                                </a>
+                            
+                                <a href="/timefrees-blog/tags/algorithm/">
+                                    <span class="chip bg-color">算法</span>
+                                </a>
+                            
+                                <a href="/timefrees-blog/tags/dynamic-programming/">
+                                    <span class="chip bg-color">动态规划</span>
+                                </a>
+                            
+                                <a href="/timefrees-blog/tags/knapsack-problem/">
+                                    <span class="chip bg-color">背包问题</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/timefrees-blog/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/timefrees-blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/timefrees-blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/timefrees-blog/uncategorized/leetcode/dp-01-knapsack-problem-optimization.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/timefrees-blog/medias/featureimages/2.jpg" class="responsive-img" alt="【动态规划】01背包问题【续】">
+                        
+                        <span class="card-title">【动态规划】01背包问题【续】</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-03-23
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Frank
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/timefrees-blog/tags/java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/algorithm/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/dynamic-programming/">
+                        <span class="chip bg-color">动态规划</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/knapsack-problem/">
+                        <span class="chip bg-color">背包问题</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/timefrees-blog/uncategorized/java/spring/source-code-analysis/spring-bean-attribute-scope.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/timefrees-blog/medias/featureimages/20.jpg" class="responsive-img" alt="【Spring源码解读】bean标签中的属性（一）scope 属性">
+                        
+                        <span class="card-title">【Spring源码解读】bean标签中的属性（一）scope 属性</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-03-05
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Frank
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/timefrees-blog/tags/spring/">
+                        <span class="chip bg-color">Spring</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/source-code-analysis/">
+                        <span class="chip bg-color">源码解读</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/timefrees-blog/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/timefrees-blog/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/timefrees-blog/libs/aplayer/APlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+    
+    <div class="container row center-align" style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2021</span>
+            
+            <span id="year">2019</span>
+            <a href="/timefrees-blog/about" target="_blank">Frank</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/blinkfox" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1181062873@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1181062873" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1181062873" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/timefrees-blog/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/timefrees-blog/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/timefrees-blog/libs/materialize/materialize.min.js"></script>
+    <script src="/timefrees-blog/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/timefrees-blog/libs/aos/aos.js"></script>
+    <script src="/timefrees-blog/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/timefrees-blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/timefrees-blog/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/timefrees-blog/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/timefrees-blog/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/timefrees-blog/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

@@ -1,0 +1,1359 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="WeakHashMap源码详解, Java,多线程,微服务,DDD">
+    <meta name="description" content="为你，千千万万遍">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>WeakHashMap源码详解 | 弗兰克的猫</title>
+    <link rel="icon" type="image/png" href="/timefrees-blog/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/timefrees-blog/css/my.css">
+
+    <script src="/timefrees-blog/libs/jquery/jquery.min.js"></script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/timefrees-blog/" class="waves-effect waves-light">
+                    
+                    <img src="/timefrees-blog/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">弗兰克的猫</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/timefrees-blog/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/timefrees-blog/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">弗兰克的猫</div>
+        <div class="logo-desc">
+            
+            为你，千千万万遍
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/timefrees-blog/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/timefrees-blog/medias/featureimages/12.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">WeakHashMap源码详解</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/timefrees-blog/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/timefrees-blog/tags/java/">
+                                <span class="chip bg-color">Java</span>
+                            </a>
+                        
+                            <a href="/timefrees-blog/tags/Java%E9%9B%86%E5%90%88/">
+                                <span class="chip bg-color">Java集合</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/timefrees-blog/categories/programming/" class="post-category">
+                                编程
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-01-03
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
+<p>源码详解系列均基于<code>JDK8</code>进行解析</p>
+</blockquote>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>在Java容器详解系列文章的最后，介绍一个相对特殊的成员：<code>WeakHashMap</code>，从名字可以看出它是一个 <code>Map</code>。它的使用上跟<code>HashMap</code>并没有什么区别，所以很多地方这里就不做过多介绍了，可以翻看一下前面HashMap中的内容。本篇主要介绍它与HashMap的不同之处。</p>
+<p><code>WeakHashMap</code> 特殊之处在于<code>WeakHashMap</code> 里的<code>entry</code>可能会被垃圾回收器自动删除，也就是说即使你没有调用<code>remove()</code>或者<code>clear()</code>方法，它的entry也可能会慢慢变少。所以多次调用比如isEmpty，containsKey，size等方法时可能会返回不同的结果。</p>
+<p>接下来希望能带着这么几个问题来进行阅读：</p>
+<p>1、WeakHashMap中的Entry为什么会自动被回收。</p>
+<p>2、WeakHashMap与HashMap的区别是什么。</p>
+<p>3、WeakHashMap的引用场景有哪些。</p>
+<h2 id="WeakHashMap探秘"><a href="#WeakHashMap探秘" class="headerlink" title="WeakHashMap探秘"></a>WeakHashMap探秘</h2><p>从说明可以看出，WeakHashMap的特殊之处便在于它的Entry与众不同，里面的Entry会被垃圾回收器自动回收，那么问题来了，为什么会被自动回收呢？HashMap里的Entry并不会被自动回收，除非把它从Map中移除掉。</p>
+<p>其实这个秘密就在于<a href="../reference/weak-reference.html">弱引用</a>，WeakHashMap中的key是间接保存在弱引用中的，所以当key没有被继续使用时，就可能会在GC的时候被回收掉。</p>
+<p>只有key对象是使用弱引用保存的，value对象实际上仍旧是通过普通的强引用来保持的，所以应该确保value不会直接或者间接的保持其对应key的强引用，因为这样会阻止key被回收。</p>
+<p>如果对于引用类型不熟悉的话，可以先阅读<a href="../reference/four-kinds-of-reference.html">这篇文章</a>。</p>
+<p>下面来从源码角度看看具体是如何实现这个特性的。</p>
+<h2 id="继承结构"><a href="#继承结构" class="headerlink" title="继承结构"></a>继承结构</h2>
+
+<p>WeakHashMap并不是继承自HashMap，而是继承自AbstractMap，跟HashMap的继承结构差不多。</p>
+<h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>WeakHashMap中的数据结构是数组+链表的形式，这一点跟HashMap也是一致的，但不同的是，在JDK8中，当发生较多key冲突的时候，HashMap中会由链表转为红黑树，而WeakHashMap则一直使用链表进行存储。</p>
+
+
+<h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认初始容量，必须是2的幂</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 最大容量</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 默认装载因子</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Entry数组，长度必须为2的幂</span></span><br><span class="line">Entry&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 元素个数</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 阈值 </span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> threshold;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 装载因子</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 引用队列</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReferenceQueue&lt;Object&gt; queue = <span class="keyword">new</span> ReferenceQueue&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改次数</span></span><br><span class="line"><span class="keyword">int</span> modCount;</span><br></pre></td></tr></table></figure>
+
+<p>跟HashMap的成员变量几乎一致，这里多了一个ReferenceQueue，用来存放那些已经被回收了的弱引用对象。如果想知道ReferenceQueue是如何工作的，可以参考<a href="../reference/reference-queue-code-detail.html">这篇文章</a>。</p>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>WeakHashMap中也有四个构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WeakHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WeakHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WeakHashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WeakHashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(Math.max((<span class="keyword">int</span>) (m.size() / DEFAULT_LOAD_FACTOR) + <span class="number">1</span>,</span><br><span class="line">                  DEFAULT_INITIAL_CAPACITY),</span><br><span class="line">         DEFAULT_LOAD_FACTOR);</span><br><span class="line">    putAll(m);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到后三个，都是调用的第一个构造函数，下面再来看一下第一个构造函数的内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 校验initialCapacity</span></span><br><span class="line"><span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Illegal Initial Capacity: &quot;</span>+</span><br><span class="line">                                       initialCapacity);</span><br><span class="line"><span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">    initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 校验loadFactor</span></span><br><span class="line"><span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Illegal Load factor: &quot;</span>+</span><br><span class="line">                                       loadFactor);</span><br><span class="line"><span class="keyword">int</span> capacity = <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 将容量设置为大于initialCapacity的最小2的幂</span></span><br><span class="line"><span class="keyword">while</span> (capacity &lt; initialCapacity)</span><br><span class="line">    capacity &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">table = newTable(capacity);</span><br><span class="line"><span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">threshold = (<span class="keyword">int</span>)(capacity * loadFactor);</span><br></pre></td></tr></table></figure>
+
+<p>再看看newTable函数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Entry&lt;K,V&gt;[] newTable(<span class="keyword">int</span> n) &#123;</span><br><span class="line">    <span class="keyword">return</span> (Entry&lt;K,V&gt;[]) <span class="keyword">new</span> Entry&lt;?,?&gt;[n];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里其实只是简单的创建一个Entry数组。</p>
+<h2 id="Entry剖析"><a href="#Entry剖析" class="headerlink" title="Entry剖析"></a>Entry剖析</h2><p>接下来看看WeakHashMap中的核心角色——Entry。上面已经看到了，WeakHashMap中的table是一个Entry数组：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Entry&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+
+<p>来看看Entry长什么样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">Object</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">	...   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Entry继承自WeakReference，继承关系图如下：</p>
+
+
+<p>再来看看Entry中的内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 成员变量</span></span><br><span class="line">V value;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">Entry&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 构造函数</span></span><br><span class="line">Entry(Object key, V value,</span><br><span class="line">      ReferenceQueue&lt;Object&gt; queue,</span><br><span class="line">      <span class="keyword">int</span> hash, Entry&lt;K,V&gt; next) &#123;</span><br><span class="line">    <span class="keyword">super</span>(key, queue);</span><br><span class="line">    <span class="keyword">this</span>.value = value;</span><br><span class="line">    <span class="keyword">this</span>.hash  = hash;</span><br><span class="line">    <span class="keyword">this</span>.next  = next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>细心的你可能会发现，哎？key哪里去了，成员变量里没有key。别着急，看看构造函数就可以发现，它调用了父类的构造函数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">super</span>(key, queue);</span><br></pre></td></tr></table></figure>
+
+<p>这里调用的WeakReference的构造函数，将key传入Reference中，保存在referent成员变量中。对Reference和WeakReference不熟悉的话可以参考<a href="../reference/reference-code-detail.html">这篇文章</a>和<a href="../reference/weak-reference-code-detail.html">这篇文章</a>。</p>
+<p>再看看其它几个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> K <span class="title">getKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 这里调用了Reference的get方法，从中取出referent对象</span></span><br><span class="line">    <span class="comment">// WeakHashMap中，key如果为null会使用NULL_KEY来替代</span></span><br><span class="line">    <span class="keyword">return</span> (K) WeakHashMap.unmaskNull(get());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">setValue</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">    V oldValue = value;</span><br><span class="line">    value = newValue;</span><br><span class="line">    <span class="keyword">return</span> oldValue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!(o <span class="keyword">instanceof</span> Map.Entry))</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    Map.Entry&lt;?,?&gt; e = (Map.Entry&lt;?,?&gt;)o;</span><br><span class="line">    K k1 = getKey();</span><br><span class="line">    Object k2 = e.getKey();</span><br><span class="line">    <span class="keyword">if</span> (k1 == k2 || (k1 != <span class="keyword">null</span> &amp;&amp; k1.equals(k2))) &#123;</span><br><span class="line">        V v1 = getValue();</span><br><span class="line">        Object v2 = e.getValue();</span><br><span class="line">        <span class="keyword">if</span> (v1 == v2 || (v1 != <span class="keyword">null</span> &amp;&amp; v1.equals(v2)))</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    K k = getKey();</span><br><span class="line">    V v = getValue();</span><br><span class="line">    <span class="comment">// 这里只是简单的把key和value的hashcode做一个异或处理</span></span><br><span class="line">    <span class="keyword">return</span> Objects.hashCode(k) ^ Objects.hashCode(v);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> getKey() + <span class="string">&quot;=&quot;</span> + getValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里稍微说一下getKey方法，调用了WeakHashMap.unmaskNull，之所以要调用这个方法，其实是因为WeakHashMap中对key为null时的特殊处理，会将其指向一个特殊的内部变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object NULL_KEY = <span class="keyword">new</span> Object();</span><br></pre></td></tr></table></figure>
+
+<p>与其对应的两个方法便是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Object <span class="title">maskNull</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? NULL_KEY : key;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> Object <span class="title">unmaskNull</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (key == NULL_KEY) ? <span class="keyword">null</span> : key;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以，其他WeakHashMap中的Entry最大的不同就是继承自WeakReference，并把key保存在了WeakReference中。可以说WeakHashMap的特性绝大部分都是WeakReference的功劳。</p>
+<h2 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h2><p>主要的方法有这些：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span>                   <span class="title">clear</span><span class="params">()</span></span></span><br><span class="line"><span class="function">Object                 <span class="title">clone</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span>                <span class="title">containsKey</span><span class="params">(Object key)</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span>                <span class="title">containsValue</span><span class="params">(Object value)</span></span></span><br><span class="line"><span class="function">Set&lt;Entry&lt;K, V&gt;&gt;       <span class="title">entrySet</span><span class="params">()</span></span></span><br><span class="line"><span class="function">V                      <span class="title">get</span><span class="params">(Object key)</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span>                <span class="title">isEmpty</span><span class="params">()</span></span></span><br><span class="line"><span class="function">Set&lt;K&gt;                 <span class="title">keySet</span><span class="params">()</span></span></span><br><span class="line"><span class="function">V                      <span class="title">put</span><span class="params">(K key, V value)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span>                   <span class="title">putAll</span><span class="params">(Map&lt;? extends K, ? extends V&gt; map)</span></span></span><br><span class="line"><span class="function">V                      <span class="title">remove</span><span class="params">(Object key)</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span>                    <span class="title">size</span><span class="params">()</span></span></span><br><span class="line"><span class="function">Collection&lt;V&gt;          <span class="title">values</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这里选其中的三个最常用的方法进行解析：</p>
+<h3 id="put方法"><a href="#put方法" class="headerlink" title="put方法"></a>put方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 处理null值</span></span><br><span class="line">    Object k = maskNull(key);</span><br><span class="line">    <span class="comment">// 计算hash</span></span><br><span class="line">    <span class="keyword">int</span> h = hash(k);</span><br><span class="line">    <span class="comment">// 获取table</span></span><br><span class="line">    Entry&lt;K,V&gt;[] tab = getTable();</span><br><span class="line">    <span class="comment">// 计算下标</span></span><br><span class="line">    <span class="keyword">int</span> i = indexFor(h, tab.length);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查找Entry</span></span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e = tab[i]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">        <span class="keyword">if</span> (h == e.hash &amp;&amp; eq(k, e.get())) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (value != oldValue)</span><br><span class="line">                e.value = value;</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    modCount++;</span><br><span class="line">    Entry&lt;K,V&gt; e = tab[i];</span><br><span class="line">    tab[i] = <span class="keyword">new</span> Entry&lt;&gt;(k, value, queue, h, e);</span><br><span class="line">    <span class="comment">// 如果元素个数超过阈值，则进行扩容</span></span><br><span class="line">    <span class="keyword">if</span> (++size &gt;= threshold)</span><br><span class="line">        resize(tab.length * <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里涉及到的方法比较多，不慌不慌，一个一个来。</p>
+<p>先来看看hash方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object k)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h = k.hashCode();</span><br><span class="line">    <span class="comment">// 这里做了二次散列，来扩大低位的影响</span></span><br><span class="line">    h ^= (h &gt;&gt;&gt; <span class="number">20</span>) ^ (h &gt;&gt;&gt; <span class="number">12</span>);</span><br><span class="line">    <span class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span class="number">7</span>) ^ (h &gt;&gt;&gt; <span class="number">4</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>hash方法对key的hashcode进行了二次散列，主要是为了扩大低位的影响。因为Entry数组的大小是2的幂，在进行查找的时候，进行掩码处理，如果不进行二次散列，那么低位对index就完全没有影响了，如果不清楚也没有关系，之后在get方法里会有说明。</p>
+<p>至于为什么要选20,12,7,4。emmm，大概是效果奇佳吧（一本正经的胡说八道，有兴趣的话可以自行研究）。</p>
+<p>再看看indexFor函数，这里就是将数组长度减1后与hashcode做一个位与操作，因为length必定是2的幂，所以减1后就变成了掩码，再进行与操作就能直接得到hashcode mod length的结果了，但是这样操作效率会更高。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">indexFor</span><span class="params">(<span class="keyword">int</span> h, <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> h &amp; (length-<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再来看看getTable方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Entry&lt;K,V&gt;[] getTable() &#123;</span><br><span class="line">    <span class="comment">// 清除被回收的Entry对象</span></span><br><span class="line">    expungeStaleEntries();</span><br><span class="line">    <span class="keyword">return</span> table;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">expungeStaleEntries</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Object x; (x = queue.poll()) != <span class="keyword">null</span>; ) &#123;</span><br><span class="line">        <span class="comment">// 循环获取引用队列中的对象</span></span><br><span class="line">        <span class="keyword">synchronized</span> (queue) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;) x;</span><br><span class="line">            <span class="comment">// 查找对应的位置</span></span><br><span class="line">            <span class="keyword">int</span> i = indexFor(e.hash, table.length);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 找到之前的Entry</span></span><br><span class="line">            Entry&lt;K,V&gt; prev = table[i];</span><br><span class="line">            Entry&lt;K,V&gt; p = prev;</span><br><span class="line">            <span class="comment">// 在链表中寻找</span></span><br><span class="line">            <span class="keyword">while</span> (p != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Entry&lt;K,V&gt; next = p.next;</span><br><span class="line">                <span class="keyword">if</span> (p == e) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (prev == e)</span><br><span class="line">                        table[i] = next;</span><br><span class="line">                    <span class="keyword">else</span></span><br><span class="line">                        prev.next = next;</span><br><span class="line">                    <span class="comment">// 将对应的value置为null，帮助GC回收</span></span><br><span class="line">                    e.value = <span class="keyword">null</span>;</span><br><span class="line">                    size--;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                prev = p;</span><br><span class="line">                p = next;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以每次调用getTable的时候，都会将table中key已经被回收掉的Entry移除掉。</p>
+<p>resize方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">resize</span><span class="params">(<span class="keyword">int</span> newCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取当前table</span></span><br><span class="line">    Entry&lt;K,V&gt;[] oldTable = getTable();</span><br><span class="line">    <span class="keyword">int</span> oldCapacity = oldTable.length;</span><br><span class="line">    <span class="keyword">if</span> (oldCapacity == MAXIMUM_CAPACITY) &#123;</span><br><span class="line">        threshold = Integer.MAX_VALUE;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 新建一个table</span></span><br><span class="line">    Entry&lt;K,V&gt;[] newTable = newTable(newCapacity);</span><br><span class="line">    <span class="comment">// 将旧table中的内容复制到新table中</span></span><br><span class="line">    transfer(oldTable, newTable);</span><br><span class="line">    table = newTable;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (size &gt;= threshold / <span class="number">2</span>) &#123;</span><br><span class="line">        threshold = (<span class="keyword">int</span>)(newCapacity * loadFactor);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        expungeStaleEntries();</span><br><span class="line">        transfer(newTable, oldTable);</span><br><span class="line">        table = oldTable;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 新建Entry数组</span></span><br><span class="line"><span class="keyword">private</span> Entry&lt;K,V&gt;[] newTable(<span class="keyword">int</span> n) &#123;</span><br><span class="line">    <span class="keyword">return</span> (Entry&lt;K,V&gt;[]) <span class="keyword">new</span> Entry&lt;?,?&gt;[n];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">transfer</span><span class="params">(Entry&lt;K,V&gt;[] src, Entry&lt;K,V&gt;[] dest)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; src.length; ++j) &#123;</span><br><span class="line">        Entry&lt;K,V&gt; e = src[j];</span><br><span class="line">        src[j] = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">            Object key = e.get();</span><br><span class="line">            <span class="keyword">if</span> (key == <span class="keyword">null</span>) &#123;</span><br><span class="line">                e.next = <span class="keyword">null</span>; </span><br><span class="line">                e.value = <span class="keyword">null</span>; </span><br><span class="line">                size--;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">int</span> i = indexFor(e.hash, dest.length);</span><br><span class="line">                e.next = dest[i];</span><br><span class="line">                dest[i] = e;</span><br><span class="line">            &#125;</span><br><span class="line">            e = next;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="get方法"><a href="#get方法" class="headerlink" title="get方法"></a>get方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 对null值特殊处理</span></span><br><span class="line">    Object k = maskNull(key);</span><br><span class="line">    <span class="comment">// 取key的hash值</span></span><br><span class="line">    <span class="keyword">int</span> h = hash(k);</span><br><span class="line">    <span class="comment">// 取当前table</span></span><br><span class="line">    Entry&lt;K,V&gt;[] tab = getTable();</span><br><span class="line">    <span class="comment">// 获取下标</span></span><br><span class="line">    <span class="keyword">int</span> index = indexFor(h, tab.length);</span><br><span class="line">    Entry&lt;K,V&gt; e = tab[index];</span><br><span class="line">    <span class="comment">// 链表中查找元素</span></span><br><span class="line">    <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (e.hash == h &amp;&amp; eq(k, e.get()))</span><br><span class="line">            <span class="keyword">return</span> e.value;</span><br><span class="line">        e = e.next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在查找元素的时候调用了一个eq方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">eq</span><span class="params">(Object x, Object y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x == y || x.equals(y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="remove方法"><a href="#remove方法" class="headerlink" title="remove方法"></a>remove方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">remove</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 对null值特殊处理</span></span><br><span class="line">    Object k = maskNull(key);</span><br><span class="line">    <span class="comment">// 取key的hash</span></span><br><span class="line">    <span class="keyword">int</span> h = hash(k);</span><br><span class="line">    <span class="comment">// 取当前table</span></span><br><span class="line">    Entry&lt;K,V&gt;[] tab = getTable();</span><br><span class="line">    <span class="comment">// 计算下标</span></span><br><span class="line">    <span class="keyword">int</span> i = indexFor(h, tab.length);</span><br><span class="line">    Entry&lt;K,V&gt; prev = tab[i];</span><br><span class="line">    Entry&lt;K,V&gt; e = prev;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">        Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">        <span class="comment">// 查找对应Entry</span></span><br><span class="line">        <span class="keyword">if</span> (h == e.hash &amp;&amp; eq(k, e.get())) &#123;</span><br><span class="line">            modCount++;</span><br><span class="line">            size--;</span><br><span class="line">            <span class="keyword">if</span> (prev == e)</span><br><span class="line">                tab[i] = next;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                prev.next = next;</span><br><span class="line">            <span class="comment">// 如果找到，返回对应Entry的value</span></span><br><span class="line">            <span class="keyword">return</span> e.value;</span><br><span class="line">        &#125;</span><br><span class="line">        prev = e;</span><br><span class="line">        e = next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用栗子"><a href="#使用栗子" class="headerlink" title="使用栗子"></a>使用栗子</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        testWeakHashMap();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testWeakHashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建3个String对象用来做key</span></span><br><span class="line">        String w1 = <span class="keyword">new</span> String(<span class="string">&quot;key1&quot;</span>);</span><br><span class="line">        String w2 = <span class="keyword">new</span> String(<span class="string">&quot;key2&quot;</span>);</span><br><span class="line">        String w3 = <span class="keyword">new</span> String(<span class="string">&quot;key3&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 新建WeakHashMap</span></span><br><span class="line">        Map weakHashMap = <span class="keyword">new</span> WeakHashMap();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加键值对</span></span><br><span class="line">        weakHashMap.put(w1, <span class="string">&quot;v1&quot;</span>);</span><br><span class="line">        weakHashMap.put(w2, <span class="string">&quot;v2&quot;</span>);</span><br><span class="line">        weakHashMap.put(w3, <span class="string">&quot;v3&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印出weakHashMap</span></span><br><span class="line">        System.out.printf(<span class="string">&quot;weakHashMap:%s\n&quot;</span>, weakHashMap);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// containsKey(Object key) :是否包含键key</span></span><br><span class="line">        System.out.printf(<span class="string">&quot;contains key key1 : %s\n&quot;</span>,weakHashMap.containsKey(<span class="string">&quot;key1&quot;</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;contains key key4 : %s\n&quot;</span>,weakHashMap.containsKey(<span class="string">&quot;key4&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// containsValue(Object value) :是否包含值value</span></span><br><span class="line">        System.out.printf(<span class="string">&quot;contains value v1 : %s\n&quot;</span>,weakHashMap.containsValue(<span class="string">&quot;v1&quot;</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;contains value 0 : %s\n&quot;</span>,weakHashMap.containsValue(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// remove(Object key) ： 删除键key对应的键值对</span></span><br><span class="line">        weakHashMap.remove(<span class="string">&quot;three&quot;</span>);</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;weakHashMap: %s\n&quot;</span>, weakHashMap);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// ---- 测试 WeakHashMap 的自动回收特性 ----</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将w1设置null。</span></span><br><span class="line">        <span class="comment">// 这意味着“弱键”w1再没有被其它对象引用，调用gc时会回收WeakHashMap中与“w1”对应的键值对</span></span><br><span class="line">        w1 = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 内存回收。这里，会回收WeakHashMap中与“w1”对应的键值对</span></span><br><span class="line">        System.gc();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历WeakHashMap</span></span><br><span class="line">        Iterator iter = weakHashMap.entrySet().iterator();</span><br><span class="line">        <span class="keyword">while</span> (iter.hasNext()) &#123;</span><br><span class="line">            Map.Entry en = (Map.Entry)iter.next();</span><br><span class="line">            System.out.printf(<span class="string">&quot;next : %s - %s\n&quot;</span>,en.getKey(),en.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 打印WeakHashMap的实际大小</span></span><br><span class="line">        System.out.printf(<span class="string">&quot;after gc WeakHashMap size:%s\n&quot;</span>, weakHashMap.size());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">weakHashMap:&#123;key1=w1, key2=w2, key3=w3&#125;</span><br><span class="line">contains key key1 : <span class="keyword">true</span></span><br><span class="line">contains key key4 : <span class="keyword">false</span></span><br><span class="line">contains value w1 : <span class="keyword">true</span></span><br><span class="line">contains value <span class="number">0</span> : <span class="keyword">false</span></span><br><span class="line">weakHashMap: &#123;key1=w1, key2=w2, key3=w3&#125;</span><br><span class="line">next : key2 - w2</span><br><span class="line">next : key3 - w3</span><br><span class="line">after gc WeakHashMap size:<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，w1对应的Entry被回收掉了，这就是WeakHashMap的最重要特性，当然，实际使用的时候一般不会这样使用，</p>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>由于WeakHashMap可以自动清除Entry，所以比较适合用于存储非必需对象，用作缓存非常合适。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentCache</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;K,V&gt; eden;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;K,V&gt; longterm;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ConcurrentCache</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.size = size;</span><br><span class="line">        <span class="keyword">this</span>.eden = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(size);</span><br><span class="line">        <span class="keyword">this</span>.longterm = <span class="keyword">new</span> WeakHashMap&lt;&gt;(size);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K k)</span> </span>&#123;</span><br><span class="line">        V v = <span class="keyword">this</span>.eden.get(k);</span><br><span class="line">        <span class="keyword">if</span> (v == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (longterm) &#123;</span><br><span class="line">                v = <span class="keyword">this</span>.longterm.get(k);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (v != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">this</span>.eden.put(k, v);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(K k, V v)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.eden.size() &gt;= size) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (longterm) &#123;</span><br><span class="line">                <span class="keyword">this</span>.longterm.putAll(<span class="keyword">this</span>.eden);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">this</span>.eden.clear();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.eden.put(k, v);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在put方法里，在插入一个键值对时，先检查eden缓存的容量是不是超过了阈值，如果没有超就直接放入eden缓存，如果超了就将eden中所有的键值对都放入longterm（这里longterm类似于老年代，eden类似于年轻代），再将eden清空并插入相应键值对。</p>
+<p>在get方法中，也是优先从eden中找对应的value，如果没有则进入longterm缓存中查找，找到后就加入eden缓存并返回。</p>
+<p>这样设计的好处是，能将相对常用的对象都能在eden缓存中找到，不常用的则存入longterm缓存，并且由于WeakHashMap能自动清除Entry，所以不用担心longterm中键值对过多而导致OOM。</p>
+<p>WeakHashMap还有这样一个不错的应用场景，配合事务进行使用，存储事务过程中的各类信息。可以使用如下结构：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WeakHashMap&lt;String,Map&lt;K,V&gt;&gt; transactionCache;</span><br></pre></td></tr></table></figure>
+
+<p>这里key为String类型，可以用来标志区分不同的事务，起到一个事务id的作用。value是一个map，可以是一个简单的HashMap或者LinkedHashMap，用来存放在事务中需要使用到的信息。</p>
+<p>在事务开始时创建一个事务id，并用它来作为key，事务结束后，将这个强引用消除掉，这样既能保证在事务中可以获取到所需要的信息，又能自动释放掉map中的所有信息。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li>WeakHashMap是一个会自动清除Entry的Map</li>
+<li>WeakHashMap的操作与HashMap完全一致</li>
+<li>WeakHashMap内部数据结构是数组+链表</li>
+<li>WeakHashMap常被用作缓存</li>
+</ul>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/timefrees-blog/about" rel="external nofollow noreferrer">Frank</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://joelet.github.io/timefrees-blog/programming/java/collection/weakhashmap-code-detail.html">https://joelet.github.io/timefrees-blog/programming/java/collection/weakhashmap-code-detail.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/timefrees-blog/about" target="_blank">Frank</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/timefrees-blog/tags/java/">
+                                    <span class="chip bg-color">Java</span>
+                                </a>
+                            
+                                <a href="/timefrees-blog/tags/Java%E9%9B%86%E5%90%88/">
+                                    <span class="chip bg-color">Java集合</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/timefrees-blog/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/timefrees-blog/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/timefrees-blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/timefrees-blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/timefrees-blog/programming/leetcode/day1-two-sum.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/timefrees-blog/medias/featureimages/15.jpg" class="responsive-img" alt="【LeetCode】两数之和">
+                        
+                        <span class="card-title">【LeetCode】两数之和</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-01-05
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/timefrees-blog/categories/programming/" class="post-category">
+                                    编程
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/timefrees-blog/tags/java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/algorithm/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/LeetCode/">
+                        <span class="chip bg-color">LeetCode</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/timefrees-blog/reading/reading/the-art-of-java-multithread-notes.html">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/timefrees-blog/medias/featureimages/5.jpg" class="responsive-img" alt="《Java并发编程的艺术》读书笔记">
+                        
+                        <span class="card-title">《Java并发编程的艺术》读书笔记</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-01-03
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/timefrees-blog/categories/reading/" class="post-category">
+                                    阅读
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/timefrees-blog/tags/java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/timefrees-blog/tags/multithread/">
+                        <span class="chip bg-color">多线程</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/timefrees-blog/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/timefrees-blog/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/timefrees-blog/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/timefrees-blog/libs/aplayer/APlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+
+    
+    <div class="container row center-align" style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2019-2021</span>
+            
+            <span id="year">2019</span>
+            <a href="/timefrees-blog/about" target="_blank">Frank</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/blinkfox" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:1181062873@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1181062873" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1181062873" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/timefrees-blog/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/timefrees-blog/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/timefrees-blog/libs/materialize/materialize.min.js"></script>
+    <script src="/timefrees-blog/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/timefrees-blog/libs/aos/aos.js"></script>
+    <script src="/timefrees-blog/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/timefrees-blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/timefrees-blog/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/timefrees-blog/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/timefrees-blog/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    <!--腾讯兔小巢-->
+    
+    
+
+    
+
+    
+
+    
+    <script src="/timefrees-blog/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
